@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Naren Adhitya - Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg:         #f5f3ef;
+  --bg2:        #ede9e3;
+  --ink:        #111110;
+  --ink-mid:    #2b2b2b;
+  --ink-soft:   #4e4e4e;
+  --ink-faint:  #5c5b59;
+  --div:        #b0b0b0;
+  --accent:     #d6b14b;
+  --accent-rgb: 201,168,76;
+  --dot-fill:   17,17,16;
+  --max-w:      1100px;
+  --gap:        96px;
+}
+[data-theme="dark"] {
+  --bg:         #0e0e0d;
+  --bg2:        #181817;
+  --ink:        #f9f7f3;
+  --ink-mid:    #e0e0e0;
+  --ink-soft:   #cdcdcd;
+  --ink-faint:  #b7b7b7;
+  --div:        #2a2a28;
+  --accent:     #7fc8d4;
+  --accent-rgb: 127,200,212;
+  --dot-fill:   240,237,232;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ─── RIPPLE OVERLAY ─────────────────────────────────────── */
+#theme-ripple {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  overflow: hidden;
+}
+#theme-ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  width: 80px;
+  height: 80px;
+}
+
+/* ─── DOT CANVAS ─────────────────────────────────────────── */
+#dot-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ─── CURSOR ─────────────────────────────────────────────── */
+#cursor {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--ink); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, background .2s;
+  mix-blend-mode: multiply;
+}
+[data-theme="dark"] #cursor { mix-blend-mode: normal; }
+#cursor-ring {
+  position: fixed; width: 32px; height: 32px;
+  border: 1px solid rgba(17,17,16,.3); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width .3s, height .3s, border-color .3s;
+}
+[data-theme="dark"] #cursor-ring { border-color: rgba(240,237,232,.2); }
+body:has(a:hover) #cursor,
+body:has(button:hover) #cursor { width: 12px; height: 12px; background: var(--accent); }
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring { width: 44px; height: 44px; border-color: var(--accent); }
+
+/* ─── THEME TOGGLE ───────────────────────────────────────── */
+.theme-toggle-btn {
+  width: 44px; height: 24px;
+  border: 1px solid var(--div); border-radius: 20px;
+  background: transparent; padding: 0;
+  position: relative; cursor: none;
+  display: flex; align-items: center;
+  transition: border-color .3s;
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover { border-color: var(--accent); }
+.toggle-knob {
+  position: absolute; left: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent);
+  transition: left .35s cubic-bezier(.22,1,.36,1), background .3s;
+}
+[data-theme="dark"] .toggle-knob { left: 22px; }
+.toggle-icon {
+  position: absolute; font-size: 9px; line-height: 1;
+  right: 6px; color: var(--ink-soft);
+  font-family: 'Syne', sans-serif;
+}
+[data-theme="dark"] .toggle-icon { right: auto; left: 6px; }
+
+/* ─── NAV ────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 60px;
+}
+.nav-left { display: flex; align-items: center; gap: 40px; }
+.nav-logo {
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none; transition: color .25s;
+}
+.nav-links { display: flex; gap: 40px; list-style: none; }
+.nav-links a {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+  position: relative; transition: color .25s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1px; background: var(--accent); transition: width .3s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ─── WRAP ───────────────────────────────────────────────── */
+.wrap { position: relative; z-index: 10; max-width: var(--max-w); margin: 0 auto; padding: 0 60px; }
+.divider { width: 100%; height: 1px; background: var(--div); margin: var(--gap) 0; }
+
+/* ─── FADE SECTION ───────────────────────────────────────── */
+.fade-section { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+.fade-section.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── HERO ───────────────────────────────────────────────── */
+#hero { min-height: 100vh; display: flex; align-items: center; padding-top: 100px; }
+.hero-inner { display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: start; width: 100%; }
+.hi { font-size: 14px; color: var(--ink-soft); letter-spacing: .06em; margin-bottom: 12px; }
+.hero-inner h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(52px,7vw,60px); font-weight: 800;
+  letter-spacing: -.01em; line-height: 1;
+  color: var(--ink); margin-bottom: 10px;
+}
+.hero-role {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 500;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 40px;
+}
+.hero-about { max-width: 520px; font-size: 15px; color: var(--ink-mid); line-height: 1.85; }
+.hero-about p+p { margin-top: 18px; }
+.hero-photo { width: 200px; flex-shrink: 0; }
+.photo-frame {
+  width: 200px; height: 240px; border: 1px solid var(--div);
+  background: var(--bg2); display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.photo-placeholder { font-family: 'Syne', sans-serif; font-size: 11px; letter-spacing: .1em; color: var(--ink-faint); text-transform: uppercase; }
+.photo-caption { margin-top: 10px; font-family: 'Syne', sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); text-align: center; }
+
+/* ─── SECTION LABEL ──────────────────────────────────────── */
+.section-label {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600;
+  letter-spacing: .28em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 40px;
+  display: flex; align-items: center; gap: 16px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--div); max-width: 80px; }
+
+/* ─── PROJECTS ───────────────────────────────────────────── */
+.projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+.projects-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); }
+.see-all-btn {
+  font-family: 'Syne', sans-serif; font-size: 12 px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none;
+  position: relative; padding-bottom: 2px; transition: color .25s;
+}
+.see-all-btn::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 1px; background: var(--accent);
+  transform: scaleX(.4); transform-origin: left; transition: transform .35s;
+}
+.see-all-btn:hover { color: var(--ink); }
+.see-all-btn:hover::after { transform: scaleX(1); }
+
+.cards-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.project-card {
+  border: 1px solid var(--div); overflow: hidden; cursor: none;
+  transition: border-color .3s; background: transparent;
+}
+.project-card:hover { border-color: rgba(var(--dot-fill)); }
+.card-img {
+  aspect-ratio: 16/10; overflow: hidden; background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+}
+.card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s cubic-bezier(.22,1,.36,1); }
+.project-card:hover .card-img img { transform: scale(1.04); }
+.card-img-placeholder { font-family: 'Syne', sans-serif; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
+.card-body { padding: 18px 20px 20px; }
+.card-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: .04em; color: var(--ink); margin-bottom: 8px; transition: transform .3s; }
+.project-card:hover .card-title { transform: translateY(-2px); }
+.card-desc { font-size: 12.5px; color: var(--ink-mid); line-height: 1.65; margin-bottom: 14px; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.card-tag { font-family: 'Syne', sans-serif; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); border: 1px solid var(--div); padding: 3px 8px; transition: border-color .25s, color .25s; }
+.project-card:hover .card-tag { border-color: var(--ink-faint); }
+.card-link { font-family: 'Syne', sans-serif; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color .25s; }
+.card-link svg { transition: transform .25s; }
+.card-link:hover { color: var(--ink); }
+.card-link:hover svg { transform: translateX(3px); }
+.sub-label { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--ink-faint); margin: 48px 0 24px; }
+
+/* ─── TECH STACK ─────────────────────────────────────────── */
+.tech-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.tech-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--div); padding: 8px 14px;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-soft); transition: border-color .25s, color .25s, background .25s; cursor: default;
+}
+.tech-tag:hover { border-color: var(--accent); color: var(--ink); background: rgba(var(--accent-rgb),.06); }
+.tech-icon { width: 14px; height: 14px; opacity: .5; transition: opacity .25s; }
+.tech-tag:hover .tech-icon { opacity: 1; }
+
+/* ─── CONTACT ────────────────────────────────────────────── */
+#contact { padding-bottom: var(--gap); }
+.contact-card-wrap { display: flex; justify-content: center; align-items: center; }
+
+.contact-card {
+  border-radius: 6px;
+  padding: 44px 52px 80px;
+  width: 440px;
+  position: relative;
+  background: var(--bg);
+  transition: transform .4s cubic-bezier(.22,1,.36,1);
+}
+.contact-card:hover { transform: scale(1.016); }
+
+#card-glow-canvas {
+  position: absolute; inset: -1px;
+  border-radius: 6px; pointer-events: none; z-index: 0; display: block;
+}
+.contact-card > *:not(#card-glow-canvas) { position: relative; z-index: 1; }
+
+.contact-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: .06em; color: var(--ink); margin-bottom: 24px; }
+.contact-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.contact-row a { color: var(--ink-soft); text-decoration: none; transition: color .25s; }
+.contact-row a:hover { color: var(--ink); }
+.contact-row svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--ink-faint); }
+
+/* Signature — pinned bottom-right inside the card */
+
+/*
+
+.contact-signature {
+  position: absolute;
+  bottom: 22px;
+  right: 28px;
+  width: 90px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--div);
+  border-radius: 2px;
+  z-index: 2;
+}
+.contact-signature span {
+  font-family: 'Noto Serif JP', serif; font-size: 9px;
+  color: var(--ink-faint); letter-spacing: .08em;
+}
+
+*/
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--div); padding: 32px 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; z-index: 10; max-width: var(--max-w); margin: 0 auto;
+}
+footer p { font-family: 'Syne', sans-serif; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* ─── ALL PROJECTS PAGE ──────────────────────────────────── */
+#all-projects-page {
+  display: none; position: fixed; inset: 0;
+  background: var(--bg); z-index: 200; overflow-y: auto; padding: 80px 60px;
+}
+#all-projects-page.open { display: block; }
+.back-btn {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-soft); background: none; border: none; padding: 0;
+  display: inline-flex; align-items: center; gap: 10px; cursor: none;
+  transition: color .25s; margin-bottom: 60px;
+}
+.back-btn:hover { color: var(--ink); }
+.all-projects-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 48px; }
+.all-cards-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; max-width: var(--max-w); margin: 0 auto; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media(max-width:900px){
+  .cards-grid,.all-cards-grid { grid-template-columns: repeat(2,1fr); }
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-photo { display: none; }
+  nav, footer { padding: 20px 28px; }
+  .wrap { padding: 0 28px; }
+  #all-projects-page { padding: 60px 28px; }
+  .contact-card { width: 90%; min-width: unset; }
+}
+@media(max-width:600px){
+  .cards-grid,.all-cards-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ripple overlay -->
+<div id="theme-ripple"><div id="theme-ripple-circle"></div></div>
+
+<canvas id="dot-canvas"></canvas>
+<div class="center-glow"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="#hero" class="nav-logo">Naren</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+  <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+    <div class="toggle-knob"></div>
+    <span class="toggle-icon">☾</span>
+  </button>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-text fade-section">
+        <p class="hi">Hi! I'm</p>
+        <h1>Naren Adhitya</h1>
+        <p class="hero-role">SWE &nbsp;·&nbsp; ML Engineer &nbsp;·&nbsp; CS Sophomore</p>
+        <div id="about" class="hero-about">
+          <p>I'm a Computer Science Undergraduate Sophomore at VIT Chennai, building at the intersection of software engineering and machine learning. </p>
+          <p>Currently focused on computer vision, ML and DL. Targeting summer 2026 internships.</p>
+        </div>
+      </div>
+      <div class="hero-photo fade-section" style="transition-delay:.15s">
+        <div class="photo-frame">
+          <div class="photo-placeholder">Photo</div>
+        </div>
+        <p class="photo-caption">Naren Adhitya S M</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="divider"></div></div>
+
+<!-- PROJECTS -->
+<section id="projects" class="wrap fade-section">
+  <div class="section-label">Projects</div>
+  <div class="projects-header">
+    <span class="projects-title">Featured Work</span>
+    <a href="#" class="see-all-btn" id="see-all-trigger">See all projects</a>
+  </div>
+  <div class="cards-grid">
+    <div class="project-card">
+      <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+      <div class="card-body">
+        <div class="card-title">Textile Defect Detection</div>
+        <p class="card-desc">Real-time defect detection system built using computer vision and deep learning on live fabric feeds.</p>
+        <div class="card-tags"><span class="card-tag">PyTorch</span><span class="card-tag">OpenCV</span><span class="card-tag">YOLO</span></div>
+        <a href="https://github.com/narenadhitya/Automated-Real-time-Textile-Defect-Detection-System" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+      <div class="card-body">
+        <div class="card-title">Credit Card Fraud Detection</div>
+        <p class="card-desc">ML pipeline for detecting fraudulent transactions with imbalanced data handling, ensemble methods, and banking-context feature engineering.</p>
+        <div class="card-tags"><span class="card-tag">Scikit-learn</span><span class="card-tag">SMOTE</span><span class="card-tag">XGBoost</span></div>
+        <a href="https://github.com/narenadhitya/Credit-fraud-detector" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+      <div class="card-body">
+        <div class="card-title">Intelligent Data Cleaning</div>
+        <p class="card-desc">Recommendation system for automated data quality improvement with fintech focus — smart imputation, anomaly flagging, and schema inference.</p>
+        <div class="card-tags"><span class="card-tag">Python</span><span class="card-tag">Pandas</span><span class="card-tag">LLM</span></div>
+        <a href="#" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="sub-label">Currently Working On</div>
+  <div class="cards-grid">
+    <div class="project-card">
+      <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+      <div class="card-body">
+        <div class="card-title">Intelligent Data Cleaning</div>
+        <p class="card-desc">Recommendation system for automated data quality improvement with fintech focus — smart imputation, anomaly flagging, and schema inference.</p>
+        <div class="card-tags"><span class="card-tag">TBD</span></div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+      <div class="card-body">
+        <div class="card-title">Project In Progress</div>
+        <p class="card-desc">Something new cooking. Details soon.</p>
+        <div class="card-tags"><span class="card-tag">TBD</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="divider"></div></div>
+
+<!-- TECH STACK -->
+<section id="stack" class="wrap fade-section">
+  <div class="section-label">Tech Stack</div>
+  <div class="tech-grid" id="tech-grid"></div>
+</section>
+
+<div class="wrap"><div class="divider"></div></div>
+
+<!-- CONTACT -->
+<section id="contact" class="wrap fade-section">
+  <div class="section-label">Contact</div>
+  <div class="contact-card-wrap">
+    <div class="contact-card" id="contact-card">
+      <canvas id="card-glow-canvas"></canvas>
+      <div class="contact-name">Naren Adhitya S M</div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        <a href="mailto:narenadhitya006@gmail.com">narenadhitya006@gmail.com</a>
+      </div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        <a href="https://www.linkedin.com/in/naren-adhitya-816bb2327/" target="_blank">linkedin</a>
+      </div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        <a href="https://github.com/narenadhitya" target="_blank">github.com/narenadhitya</a>
+      </div>
+      <!-- Signature pinned bottom-right -->
+      <!--
+
+      <div class="contact-signature">
+        <span>Signature</span>
+      </div>
+      
+      -->
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>© 2026 Naren Adhitya S M</p>
+  <p>Chennai</p>
+</footer>
+
+<!-- ALL PROJECTS OVERLAY -->
+<div id="all-projects-page">
+  <div style="max-width:var(--max-w);margin:0 auto">
+    <button class="back-btn" id="back-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 7H4M7 4L4 7l3 3"/></svg>
+      Back
+    </button>
+    <div class="all-projects-title">All Projects</div>
+    <div class="all-cards-grid" id="all-cards-grid"></div>
+  </div>
+</div>
+
+<script>
+/* ══ 1. TECH STACK ══════════════════════════════════════════ */
+const TECH = [
+  {name:'Python',color:'#3776AB'},{name:'PyTorch',color:'#EE4C2C'},
+  {name:'TensorFlow',color:'#FF6F00'},{name:'OpenCV',color:'#5C3EE8'},
+  {name:'Scikit-learn',color:'#F7931E'},{name:'Git',color:'#F05032'},
+  {name:'NumPy',color:'#013243'},{name:'Pandas',color:'#150458'},
+  {name:'FastAPI',color:'#009688'},{name:'React',color:'#61DAFB'},
+  {name:'SQL',color:'#4479A1'},{name:'Docker',color:'#2496ED'},
+  {name:'Java',color:'#007396'},{name:'C++',color:'#00599C'},
+  {name:'Oracle Cloud',color:'#C74634'},
+];
+const techGrid = document.getElementById('tech-grid');
+TECH.forEach(t => {
+  const el = document.createElement('div');
+  el.className = 'tech-tag';
+  el.innerHTML = `<svg class="tech-icon" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="${t.color}" opacity=".9"/></svg>${t.name}`;
+  techGrid.appendChild(el);
+});
+
+/* ══ 2. ALL PROJECTS ════════════════════════════════════════ */
+const ALL_PROJECTS = [
+  {title:'Textile Defect Detection',desc:'Real-time defect detection using CV and DL on live fabric feeds. TNIMPACT state hackathon.',tags:['PyTorch','OpenCV','YOLO'],link:'#'},
+  {title:'Credit Card Fraud Detection',desc:'ML pipeline for imbalanced fraud detection with ensemble methods and banking-context engineering.',tags:['Scikit-learn','SMOTE','XGBoost'],link:'#'},
+  {title:'Intelligent Data Cleaning',desc:'Automated data quality recommendation system with smart imputation and anomaly flagging.',tags:['Python','Pandas','LLM'],link:'#'},
+  {title:'JPMorgan Forage Program',desc:'Virtual experience covering financial data analysis, interfaces, and quantitative reasoning.',tags:['Finance','Python','Data'],link:'#'},
+  {title:'Project TBD',desc:'Work in progress. Check back soon.',tags:['TBD'],link:'#'},
+  {title:'Project TBD',desc:'Work in progress. Check back soon.',tags:['TBD'],link:'#'},
+];
+function makeCard(p){
+  return `<div class="project-card">
+    <div class="card-img"><div class="card-img-placeholder">Image</div></div>
+    <div class="card-body">
+      <div class="card-title">${p.title}</div>
+      <p class="card-desc">${p.desc}</p>
+      <div class="card-tags">${p.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+      <a href="${p.link}" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+    </div>
+  </div>`;
+}
+document.getElementById('all-cards-grid').innerHTML = ALL_PROJECTS.map(makeCard).join('');
+
+/* ══ 3. NAV ═════════════════════════════════════════════════ */
+const allPage = document.getElementById('all-projects-page');
+document.getElementById('see-all-trigger').addEventListener('click', e => {
+  e.preventDefault(); allPage.classList.add('open'); allPage.scrollTop = 0;
+});
+document.getElementById('back-btn').addEventListener('click', () => {
+  allPage.classList.remove('open');
+});
+
+/* ══ 4. THEME TOGGLE + RIPPLE ═══════════════════════════════
+   Ripple wave expands from the toggle button,
+   floods the screen in the destination colour,
+   then the theme flips at the wave's peak and the circle
+   fades out — leaving the new theme underneath.
+═══════════════════════════════════════════════════════════ */
+const htmlEl       = document.documentElement;
+const toggleBtn    = document.getElementById('theme-toggle');
+const toggleIcon   = toggleBtn.querySelector('.toggle-icon');
+const rippleCircle = document.getElementById('theme-ripple-circle');
+
+let rippling = false;
+
+toggleBtn.addEventListener('click', () => {
+  if (rippling) return;
+  rippling = true;
+
+  const isDark     = htmlEl.getAttribute('data-theme') === 'dark';
+  const goingDark  = !isDark;
+
+  // Destination bg colour — what the wave will "paint"
+  const waveColor  = goingDark ? '#0e0e0d' : '#f5f3ef';
+
+  // Origin: centre of toggle button
+  const btnRect = toggleBtn.getBoundingClientRect();
+  const ox = btnRect.left + btnRect.width  / 2;
+  const oy = btnRect.top  + btnRect.height / 2;
+
+  // Diameter needed to cover the entire viewport from this origin
+  const maxRadius  = Math.hypot(
+    Math.max(ox, window.innerWidth  - ox),
+    Math.max(oy, window.innerHeight - oy)
+  );
+  const diameter   = maxRadius * 2 + 40;
+  const scaleFactor = diameter / 80; // base size is 80px
+
+  // ── Position & reset circle ──────────────────────────────
+  Object.assign(rippleCircle.style, {
+    transition:  'none',
+    left:        ox + 'px',
+    top:         oy + 'px',
+    width:       '80px',
+    height:      '80px',
+    background:  waveColor,
+    opacity:     '1',
+    transform:   'translate(-50%,-50%) scale(0)',
+  });
+
+  // Force reflow so the reset takes effect
+  void rippleCircle.getBoundingClientRect();
+
+  // ── Animate expand ───────────────────────────────────────
+  rippleCircle.style.transition =
+    `transform 0.68s cubic-bezier(0.4, 0, 0.2, 1)`;
+  rippleCircle.style.transform  =
+    `translate(-50%,-50%) scale(${scaleFactor})`;
+
+  // ── Flip theme at 50% of animation ──────────────────────
+  const TOTAL_MS = 680;
+  setTimeout(() => {
+    htmlEl.setAttribute('data-theme', goingDark ? 'dark' : 'light');
+    toggleIcon.textContent = goingDark ? '☾' : '☀';
+  }, TOTAL_MS * 0.48);
+
+  // ── Fade out circle after theme has flipped ──────────────
+  setTimeout(() => {
+    rippleCircle.style.transition = 'opacity 0.22s ease';
+    rippleCircle.style.opacity    = '0';
+  }, TOTAL_MS * 0.52);
+
+  // ── Cleanup ──────────────────────────────────────────────
+  setTimeout(() => {
+    rippleCircle.style.transition = 'none';
+    rippleCircle.style.transform  = 'translate(-50%,-50%) scale(0)';
+    rippleCircle.style.opacity    = '0';
+    rippling = false;
+  }, TOTAL_MS + 260);
+});
+
+/* ══ 5. CUSTOM CURSOR ═══════════════════════════════════════ */
+const cursorDot  = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = -200, my = -200, rx = -200, ry = -200;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursorDot.style.left = mx + 'px';
+  cursorDot.style.top  = my + 'px';
+});
+(function animRing(){
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ══ 6. DOT GRID ════════════════════════════════════════════ */
+const dotCanvas = document.getElementById('dot-canvas');
+const dc = dotCanvas.getContext('2d');
+const SPACING = 28, DOT_R = 1.1, GLOW_R = 130;
+let dots = [];
+let dcx = -500, dcy = -500;
+
+function buildDots(){
+  dots = [];
+  const cols = Math.ceil(window.innerWidth  / SPACING) + 2;
+  const rows = Math.ceil(window.innerHeight / SPACING) + 2;
+  for(let r=0; r<rows; r++)
+    for(let c=0; c<cols; c++)
+      dots.push({x: c*SPACING, y: r*SPACING});
+}
+function resizeDots(){
+  dotCanvas.width  = window.innerWidth;
+  dotCanvas.height = window.innerHeight;
+  buildDots();
+}
+resizeDots();
+window.addEventListener('resize', resizeDots);
+document.addEventListener('mousemove', e => { dcx = e.clientX; dcy = e.clientY; });
+
+(function drawDots(){
+  dc.clearRect(0, 0, dotCanvas.width, dotCanvas.height);
+  const rgb = htmlEl.getAttribute('data-theme') === 'dark' ? '240,237,232' : '17,17,16';
+  for(const d of dots){
+    const dist  = Math.hypot(d.x - dcx, d.y - dcy);
+    const alpha = dist > GLOW_R ? 0.065 : 0.065 + (1 - dist/GLOW_R)**2 * 0.66;
+    dc.globalAlpha = alpha;
+    dc.fillStyle   = `rgb(${rgb})`;
+    dc.beginPath();
+    dc.arc(d.x, d.y, DOT_R, 0, Math.PI*2);
+    dc.fill();
+  }
+  requestAnimationFrame(drawDots);
+})();
+
+/* ══ 7. CONTACT CARD — LOCALIZED BORDER GLOW ═══════════════ */
+const card  = document.getElementById('contact-card');
+const gc_el = document.getElementById('card-glow-canvas');
+const gc    = gc_el.getContext('2d');
+
+function buildPerimeter(w, h, r) {
+  const pts = [], STEPS = 600;
+  const circumference = 2*(w+h) - 8*r + 2*Math.PI*r;
+  const tL = w-2*r, rL = h-2*r, bL = w-2*r, lL = h-2*r, aL = (Math.PI/2)*r;
+  function s(l){ return Math.max(2, Math.round(STEPS * l / circumference)); }
+  const sT=s(tL), sR=s(rL), sB=s(bL), sL=s(lL), sA=s(aL);
+
+  for(let i=0;i<=sA;i++){ const a=Math.PI+(Math.PI/2)*(i/sA); pts.push([r+r*Math.cos(a), r+r*Math.sin(a)]); }
+  for(let i=1;i<=sT;i++) pts.push([r+tL*(i/sT), 0]);
+  for(let i=1;i<=sA;i++){ const a=-Math.PI/2+(Math.PI/2)*(i/sA); pts.push([w-r+r*Math.cos(a), r+r*Math.sin(a)]); }
+  for(let i=1;i<=sR;i++) pts.push([w, r+rL*(i/sR)]);
+  for(let i=1;i<=sA;i++){ const a=(Math.PI/2)*(i/sA); pts.push([w-r+r*Math.cos(a), h-r+r*Math.sin(a)]); }
+  for(let i=1;i<=sB;i++) pts.push([w-r-bL*(i/sB), h]);
+  for(let i=1;i<=sA;i++){ const a=Math.PI/2+(Math.PI/2)*(i/sA); pts.push([r+r*Math.cos(a), h-r+r*Math.sin(a)]); }
+  for(let i=1;i<=sL;i++) pts.push([0, h-r-lL*(i/sL)]);
+  return pts;
+}
+
+let perim = [];
+function resizeGlowCanvas(){
+  const cw = card.offsetWidth + 2, ch = card.offsetHeight + 2;
+  gc_el.width = cw; gc_el.height = ch;
+  gc_el.style.width = cw+'px'; gc_el.style.height = ch+'px';
+  perim = buildPerimeter(cw-1, ch-1, 6);
+}
+resizeGlowCanvas();
+new ResizeObserver(resizeGlowCanvas).observe(card);
+
+let cardMx = -9999, cardMy = -9999;
+document.addEventListener('mousemove', e => {
+  const rect = card.getBoundingClientRect();
+  cardMx = e.clientX - rect.left + 1;
+  cardMy = e.clientY - rect.top  + 1;
+});
+
+const GLOW_ARC = 90;
+(function drawCardBorder(){
+  const w = gc_el.width, h = gc_el.height;
+  gc.clearRect(0, 0, w, h);
+  if(!perim.length){ requestAnimationFrame(drawCardBorder); return; }
+
+  const isDark  = htmlEl.getAttribute('data-theme') === 'dark';
+  const divRgb  = isDark ? '42,42,40'    : '176,176,176';
+  const glowRgb = isDark ? '127,200,212' : '201,168,76';
+
+  gc.beginPath();
+  gc.moveTo(perim[0][0], perim[0][1]);
+  for(let i=1;i<perim.length;i++) gc.lineTo(perim[i][0], perim[i][1]);
+  gc.closePath();
+  gc.strokeStyle = `rgba(${divRgb},1)`;
+  gc.lineWidth = 1;
+  gc.stroke();
+
+  let minDist = Infinity, closestIdx = 0;
+  for(let i=0;i<perim.length;i++){
+    const d = Math.hypot(perim[i][0]-cardMx, perim[i][1]-cardMy);
+    if(d < minDist){ minDist = d; closestIdx = i; }
+  }
+
+  const proximity = Math.max(0, 1 - minDist / 180);
+  if(proximity < 0.01){ requestAnimationFrame(drawCardBorder); return; }
+
+  const total = perim.length;
+  for(let di = -GLOW_ARC; di < GLOW_ARC; di++){
+    const idx  = (closestIdx + di + total) % total;
+    const idx2 = (idx + 1) % total;
+    const t    = 1 - Math.abs(di) / GLOW_ARC;
+    const eased = t * t * t;
+    const alpha = eased * 0.95 * proximity;
+    if(alpha < 0.005) continue;
+    gc.beginPath();
+    gc.moveTo(perim[idx][0],  perim[idx][1]);
+    gc.lineTo(perim[idx2][0], perim[idx2][1]);
+    gc.strokeStyle = `rgba(${glowRgb},${alpha.toFixed(3)})`;
+    gc.lineWidth = 2;
+    gc.lineCap = 'round';
+    gc.stroke();
+  }
+  requestAnimationFrame(drawCardBorder);
+})();
+
+/* ══ 8. SCROLL FADE-IN ══════════════════════════════════════ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
+}, {threshold: 0.1});
+document.querySelectorAll('.fade-section').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ TECH.forEach(t => {
 
 /* ══ 2. ALL PROJECTS ════════════════════════════════════════ */
 const ALL_PROJECTS = [
+  { title: 'Semantic Compliance Engine', desc: 'Multimodal RAG inspired pipeline for enterprise policy auditing - vector + structural conflict detection with LLM-based judgement', tags: ['FastAPI', 'pgvector', 'React'], link: 'https://github.com/narenadhitya/semantic-compliance-engine', img: 'img/sem com eng.png' },
   { title: 'Textile Defect Detection', desc: 'Real-time defect detection using CV and DL on live fabric feeds. TNIMPACT state hackathon.', tags: ['PyTorch', 'OpenCV', 'EfficientNet'], link: 'https://github.com/narenadhitya/Automated-Real-time-Textile-Defect-Detection-System', img: 'img/Textile defect.png' },
   { title: 'Credit Card Fraud Detection', desc: 'ML pipeline for imbalanced fraud detection with ensemble methods and banking-context engineering.', tags: ['Scikit-learn', 'SMOTE', 'Random Forest'], link: 'https://github.com/narenadhitya/Credit-fraud-detector', img: 'img/Credit fraud.png' },
   { title: 'Graphing Calculator', desc: 'Web application for graphing mathematical functions with equation parsing,interactive features and real-time visualization.', tags: ['HTML', 'CSS', 'JavaScript'], link: 'https://github.com/narenadhitya/Graphing-Calculator', img: 'img/Graphing Calculator.png' },
@@ -26,19 +27,33 @@ const ALL_PROJECTS = [
 ];
 
 function makeCard(p) {
+  const imageMarkup = p.img
+    ? `<div class="card-img"><img src="${p.img}" alt="${p.title}" style="width: 100%; height: 100%; object-fit: cover;"></div>`
+    : `<div class="card-img"><div class="card-img-placeholder">Image</div></div>`;
+
+  const linkMarkup = p.link && p.link !== '#'
+    ? `<a href="${p.link}" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>`
+    : '';
+
   return `<div class="project-card">
-    <div class="card-img">
-        <img src="${p.img}" alt="${p.title}" style="width: 100%; height: 100%; object-fit: cover;">
-      </div>
+    ${imageMarkup}
     <div class="card-body">
       <div class="card-title">${p.title}</div>
       <p class="card-desc">${p.desc}</p>
       <div class="card-tags">${p.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}</div>
-      <a href="${p.link}" class="card-link">GitHub <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+      ${linkMarkup}
     </div>
   </div>`;
 }
-document.getElementById('all-cards-grid').innerHTML = ALL_PROJECTS.map(makeCard).join('');
+
+function renderProjects(containerId, projects) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = projects.map(makeCard).join('');
+}
+
+renderProjects('featured-projects-grid', ALL_PROJECTS.slice(0, 3));
+renderProjects('all-cards-grid', ALL_PROJECTS);
 
 /* ══ 3. NAV ═════════════════════════════════════════════════ */
 const allPage = document.getElementById('all-projects-page');
